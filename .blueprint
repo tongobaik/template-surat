@@ -1,0 +1,18 @@
+created:
+    - database/factories/TahunPelajaranFactory.php
+    - database/factories/KelasFactory.php
+    - database/factories/KelasTahunFactory.php
+    - database/factories/SiswaFactory.php
+    - database/migrations/2024_12_11_160222_create_tahun_pelajarans_table.php
+    - database/migrations/2024_12_11_160223_create_kelas_table.php
+    - database/migrations/2024_12_11_160224_create_kelas_tahuns_table.php
+    - database/migrations/2024_12_11_160225_create_siswas_table.php
+    - app/Models/TahunPelajaran.php
+    - app/Models/Kelas.php
+    - app/Models/KelasTahun.php
+    - app/Models/Siswa.php
+models:
+    TahunPelajaran: { nama: string, is_active: boolean, relationships: { hasMany: 'Kelas, KelasTahun' } }
+    Kelas: { nama: string, tingkat: 'enum:VI,VII,IX', relationships: { hasMany: 'Siswa, KelasTahun' } }
+    KelasTahun: { kelas_id: 'id foreign:kelas', tahun_pelajaran_id: 'id foreign:tahun_pelajarans', relationships: { belongsTo: 'Kelas, TahunPelajaran', hasMany: Siswa } }
+    Siswa: { nama: string, nisn: string, nik: string, tempat_lahir: string, tanggal_lahir: date, is_active: boolean, jenis_kelamin: 'enum:Laki-laki,Perempuan', nama_ayah: string, nama_ibu: string, kelas_tahun_id: 'id foreign:kelas_tahuns', relationships: { belongsTo: KelasTahun } }
