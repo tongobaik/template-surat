@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Kelas extends Model
 {
@@ -18,6 +20,7 @@ class Kelas extends Model
     protected $fillable = [
         'nama',
         'tingkat',
+        'tahun_pelajaran_id',
     ];
 
     /**
@@ -27,15 +30,16 @@ class Kelas extends Model
      */
     protected $casts = [
         'id' => 'integer',
+        'tahun_pelajaran_id' => 'integer',
     ];
+
+    public function tahunPelajaran(): BelongsTo
+    {
+        return $this->belongsTo(TahunPelajaran::class);
+    }
 
     public function siswa(): HasMany
     {
         return $this->hasMany(Siswa::class);
-    }
-
-    public function kelasTahun(): HasMany
-    {
-        return $this->hasMany(KelasTahun::class);
     }
 }

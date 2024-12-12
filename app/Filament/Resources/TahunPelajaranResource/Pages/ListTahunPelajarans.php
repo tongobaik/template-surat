@@ -2,9 +2,10 @@
 
 namespace App\Filament\Resources\TahunPelajaranResource\Pages;
 
-use App\Filament\Resources\TahunPelajaranResource;
 use Filament\Actions;
+use Illuminate\Support\Facades\Auth;
 use Filament\Resources\Pages\ListRecords;
+use App\Filament\Resources\TahunPelajaranResource;
 
 class ListTahunPelajarans extends ListRecords
 {
@@ -13,7 +14,8 @@ class ListTahunPelajarans extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->visible(Auth::user()->is_admin === 'Administrator'),
         ];
     }
 }

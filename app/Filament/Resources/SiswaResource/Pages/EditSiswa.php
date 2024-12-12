@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources\SiswaResource\Pages;
 
-use App\Filament\Resources\SiswaResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
+use App\Filament\Resources\SiswaResource;
 
 class EditSiswa extends EditRecord
 {
@@ -13,10 +13,10 @@ class EditSiswa extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\ViewAction::make(),
-            Actions\DeleteAction::make(),
-            Actions\ForceDeleteAction::make(),
-            Actions\RestoreAction::make(),
+            // Actions\ViewAction::make(),
+            // Actions\DeleteAction::make(),
+            // Actions\ForceDeleteAction::make(),
+            // Actions\RestoreAction::make(),
         ];
     }
 }

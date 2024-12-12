@@ -2,20 +2,18 @@
 
 namespace App\Filament\Resources\UserResource\Pages;
 
-use Filament\Actions;
-use Illuminate\Support\Facades\Auth;
 use App\Filament\Resources\UserResource;
-use Filament\Resources\Pages\ListRecords;
+use Filament\Actions;
+use Filament\Resources\Pages\ViewRecord;
 
-class ListUsers extends ListRecords
+class ViewUser extends ViewRecord
 {
     protected static string $resource = UserResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()
-                ->visible(Auth::user()->is_admin === 'Administrator'),
+            Actions\EditAction::make(),
         ];
     }
 }

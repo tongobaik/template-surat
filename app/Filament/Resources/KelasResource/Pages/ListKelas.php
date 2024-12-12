@@ -2,8 +2,9 @@
 
 namespace App\Filament\Resources\KelasResource\Pages;
 
-use App\Filament\Resources\KelasResource;
 use Filament\Actions;
+use Illuminate\Support\Facades\Auth;
+use App\Filament\Resources\KelasResource;
 use Filament\Resources\Pages\ListRecords;
 
 class ListKelas extends ListRecords
@@ -13,7 +14,8 @@ class ListKelas extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->visible(Auth::user()->is_admin === 'Administrator'),
         ];
     }
 }

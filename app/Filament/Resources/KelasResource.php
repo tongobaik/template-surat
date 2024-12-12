@@ -2,68 +2,96 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\KelasResource\Pages;
-use App\Filament\Resources\KelasResource\RelationManagers;
-use App\Models\Kelas;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use App\Models\Kelas;
+use App\Models\Siswa;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\KelasResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\KelasResource\RelationManagers;
 
 class KelasResource extends Resource
 {
     protected static ?string $model = Kelas::class;
+    protected static ?string $label = 'Rombel/Kelas';
+    protected static ?int $navigationSort = 2;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-building-storefront';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\TextInput::make('nama')
+                    ->label('Kelas')
                     ->required(),
-                Forms\Components\TextInput::make('tingkat')
+                Forms\Components\Select::make('tingkat')
+                    ->label('Tingkat')
+                    ->options([
+                        'VII' => 'VII',
+                        'VIII' => 'VIII',
+                        'IX' => 'IX',
+                    ])
+                    ->default('IX')
+                    ->native(false)
+                    ->required(),
+                Forms\Components\Select::make('tahun_pelajaran_id')
+                    ->label('Tahun Pelajaran')
+                    ->relationship('tahunPelajaran', 'nama')
+                    ->native(false)
                     ->required(),
             ]);
     }
 
     public static function table(Table $table): Table
     {
-        return $table
-            ->columns([
-                Tables\Columns\TextColumn::make('nama')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('tingkat')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('deleted_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-            ])
-            ->filters([
-                Tables\Filters\TrashedFilter::make(),
-            ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                    Tables\Actions\ForceDeleteBulkAction::make(),
-                    Tables\Actions\RestoreBulkAction::make(),
-                ]),
-            ]);
+        if (Auth::check()) {
+            $user = Auth::user();
+            $siswa = Siswa::where('nisn', $user->username)->first();
+            if ($siswa && $user->is_active || $user->is_admin === 'Administrator') {
+                return $table
+                    ->columns([
+                        Tables\Columns\TextColumn::make('nama')
+                            ->label('Kelas')
+                            ->sortable(),
+                        Tables\Columns\TextColumn::make('tingkat')
+                            ->label('Tingkat')
+                            ->sortable(),
+                        Tables\Columns\TextColumn::make('tahunPelajaran.nama')
+                            ->label('Tahun Pelajaran')
+                            ->sortable(),
+                        Tables\Columns\TextColumn::make('created_at')
+                            ->dateTime()
+                            ->sortable()
+                            ->toggleable(isToggledHiddenByDefault: true),
+                        Tables\Columns\TextColumn::make('updated_at')
+                            ->dateTime()
+                            ->sortable()
+                            ->toggleable(isToggledHiddenByDefault: true),
+                    ])
+                    ->filters([])
+                    ->actions([
+                        Tables\Actions\EditAction::make()
+                            ->visible(Auth::user()->is_admin === 'Administrator'),
+                        Tables\Actions\DeleteAction::make()
+                            ->visible(Auth::user()->is_admin === 'Administrator')
+                    ])
+                    ->bulkActions([
+                        Tables\Actions\BulkActionGroup::make([
+                            Tables\Actions\DeleteBulkAction::make(),
+                            Tables\Actions\ForceDeleteBulkAction::make(),
+                            Tables\Actions\RestoreBulkAction::make(),
+                        ])
+                            ->visible(Auth::user()->is_admin === 'Administrator'),
+                    ]);
+            }
+            return $table->columns([]);
+        }
     }
 
     public static function getRelations(): array
@@ -75,18 +103,20 @@ class KelasResource extends Resource
 
     public static function getPages(): array
     {
+        if (Auth::check()) {
+            $user = Auth::user();
+            $siswa = Siswa::where('nisn', $user->username)->first();
+            if ($siswa && $user->is_active || $user->is_admin === 'Administrator') {
+                return [
+                    'index' => Pages\ListKelas::route('/'),
+                ];
+            }
+        }
         return [
             'index' => Pages\ListKelas::route('/'),
             'create' => Pages\CreateKelas::route('/create'),
+            'view' => Pages\ViewKelas::route('/{record}'),
             'edit' => Pages\EditKelas::route('/{record}/edit'),
         ];
-    }
-
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()
-            ->withoutGlobalScopes([
-                SoftDeletingScope::class,
-            ]);
     }
 }

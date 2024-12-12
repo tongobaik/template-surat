@@ -3,19 +3,14 @@ models:
     nama: string
     is_active: boolean
     relationships:
-      hasMany: Kelas, KelasTahun
+      hasMany: Kelas
 
   Kelas:
     nama: string
-    tingkat: enum:VI,VII,IX
-    relationships:
-      hasMany: Siswa, KelasTahun
-
-  KelasTahun:
-    kelas_id: id foreign:kelas
+    tingkat: enum:VII,VIII,IX
     tahun_pelajaran_id: id foreign:tahun_pelajarans
     relationships:
-      belongsTo: Kelas, TahunPelajaran
+      belongsTo: TahunPelajaran
       hasMany: Siswa
 
   Siswa:
@@ -28,6 +23,6 @@ models:
     jenis_kelamin: enum:Laki-laki,Perempuan
     nama_ayah: string
     nama_ibu: string
-    kelas_tahun_id: id foreign:kelas_tahuns
+    kelas_id: id foreign:kelas
     relationships:
-      belongsTo: KelasTahun
+      belongsTo: Kelas

@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class TahunPelajaran extends Model
 {
@@ -33,10 +34,5 @@ class TahunPelajaran extends Model
     public function kelas(): HasMany
     {
         return $this->hasMany(Kelas::class);
-    }
-
-    public function kelasTahun(): HasMany
-    {
-        return $this->hasMany(KelasTahun::class);
     }
 }
