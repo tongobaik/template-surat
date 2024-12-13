@@ -29,6 +29,9 @@ class Siswa extends Model
         'nama_ibu',
         'kelas_id',
         'status_verval',
+        'file_foto',
+        'file_kk',
+        'file_ijazah',
     ];
 
     /**

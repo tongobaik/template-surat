@@ -25,6 +25,9 @@ return new class extends Migration
             $table->string('nama_ibu')->nullable();
             $table->foreignId('kelas_id')->constrained('kelas')->cascadeOnDelete()->cascadeOnUpdate();
             $table->boolean('status_verval')->nullable();
+            $table->string('file_foto')->nullable();
+            $table->string('file_kk')->nullable();
+            $table->string('file_ijazah')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

@@ -89,6 +89,13 @@ class DatabaseSeeder extends Seeder
             'kelas_id' => 2,
             'status_verval' => null,
         ]);
+        Siswa::create([
+            'nama' => 'Kelvin Widjayanto',
+            'nisn' => '1234567891',
+            'jenis_kelamin' => 'Laki-laki',
+            'kelas_id' => 3,
+            'status_verval' => null,
+        ]);
         User::factory()->create([
             'name' => 'Administrator',
             'email' => 'adm@mtsn1pandeglang.sch.id',
@@ -107,6 +114,13 @@ class DatabaseSeeder extends Seeder
             'username' => '1234567890',
             'email' => '1234567890@mtsn1pandeglang.sch.id',
             'is_active' => false,
+            'is_admin' => 'Siswa',
+        ]);
+        User::factory()->create([
+            'name' => 'Kelvin Widjayanto',
+            'username' => '1234567891',
+            'email' => '1234567891@mtsn1pandeglang.sch.id',
+            'is_active' => true,
             'is_admin' => 'Siswa',
         ]);
     }

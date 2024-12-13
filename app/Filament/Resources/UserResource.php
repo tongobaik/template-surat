@@ -35,13 +35,15 @@ class UserResource extends Resource
                 Forms\Components\TextInput::make('username')
                     ->label('Usename/NISN')
                     ->visible(Auth::user()->is_admin === 'Administrator')
-                    ->required(fn($record) => $record === null),
+                    ->required(fn($record) => $record === null)
+                    ->disabledOn('edit'),
                 Forms\Components\TextInput::make('email')
                     ->label('Alamat Email')
                     ->helperText('email harus berdomain @mtsn1pandeglang.sch.id')
                     ->email()
                     ->rule(fn($record) => $record === null ? 'unique:users,email' : 'unique:users,email,' . $record->id)
                     ->dehydrateStateUsing(fn($state) => $state ? $state : null)
+                    ->disabledOn('edit')
                     ->required(),
                 Forms\Components\TextInput::make('password')
                     ->label('Password')

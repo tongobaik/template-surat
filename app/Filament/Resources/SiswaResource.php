@@ -10,6 +10,7 @@ use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Illuminate\Support\Facades\Auth;
 use Filament\Tables\Actions\ActionGroup;
+use Filament\Forms\Components\FileUpload;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Enums\ActionsPosition;
 use App\Filament\Resources\SiswaResource\Pages;
@@ -33,6 +34,7 @@ class SiswaResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('nama')
                     ->label('Nama Lengkap')
+                    ->helperText('Sesuaikan dengan data Ijazah SD/MI.')
                     ->required()
                     ->columnSpanFull(),
                 Forms\Components\TextInput::make('nisn')
@@ -45,25 +47,19 @@ class SiswaResource extends Resource
                     ->required(fn($record) => $record !== null),
                 Forms\Components\TextInput::make('tempat_lahir')
                     ->label('Tempat Lahir')
+                    ->helperText('Sesuaikan dengan data Ijazah SD/MI.')
                     ->required(fn($record) => $record !== null),
                 Forms\Components\DatePicker::make('tanggal_lahir')
                     ->label('Tanggal Lahir')
+                    ->helperText('Sesuaikan dengan data Ijazah SD/MI.')
                     ->required(fn($record) => $record !== null),
-                // Forms\Components\Select::make('is_active')
-                //     ->label('Status Siswa')
-                //     ->options([
-                //         '0' => 'Nonaktif',
-                //         '1' => 'Aktif',
-                //     ])
-                //     ->native(false)
-                //     ->visible(Auth::user()->is_admin === 'Administrator')
-                //     ->required(),
-
                 Forms\Components\TextInput::make('nama_ayah')
+                    ->helperText('Sesuaikan dengan data Ijazah SD/MI.')
                     ->label('Nama Ayah Kandung')
                     ->required(fn($record) => $record !== null),
                 Forms\Components\TextInput::make('nama_ibu')
                     ->label('Nama Ibu Kandung')
+                    ->helperText('Sesuaikan dengan data Ijazah SD/MI.')
                     ->required(fn($record) => $record !== null),
                 Forms\Components\Select::make('kelas_id')
                     ->label('Kelas')
@@ -78,10 +74,58 @@ class SiswaResource extends Resource
                     ])
                     ->native(false)
                     ->required(),
+                FileUpload::make('file_foto')
+                    ->label('Foto Formal')
+                    ->image()
+                    ->fetchFileInformation(false)
+                    ->imageEditor()
+                    ->imageEditorAspectRatios([
+                        null,
+                        '1:1',
+                        '4:3',
+                        '3:4',
+                    ])
+                    ->directory(fn() => 'img/' . Auth::user()->username . '/foto')
+                    ->maxSize(1024)
+                    ->minSize(10)
+                    ->required(),
+                FileUpload::make('file_kk')
+                    ->label('Kartu Keluarga')
+                    ->directory('img/kk')
+                    ->image()
+                    ->fetchFileInformation(false)
+
+                    ->imageEditor()
+                    ->imageEditorAspectRatios([
+                        null,
+                        '1:1',
+                        '4:3',
+                        '3:4',
+                    ])
+                    ->directory(fn() => 'img/' . Auth::user()->username . '/kk')
+                    ->maxSize(1024)
+                    ->minSize(10)
+                    ->required(),
+                FileUpload::make('file_ijazah')
+                    ->label('Ijazah')
+                    ->directory('img/ijazah')
+                    ->fetchFileInformation(false)
+                    ->image()
+                    ->imageEditor()
+                    ->imageEditorAspectRatios([
+                        null,
+                        '1:1',
+                        '4:3',
+                        '3:4',
+                    ])
+                    ->directory(fn() => 'img/' . Auth::user()->username . '/ijazah')
+                    ->maxSize(1024)
+                    ->minSize(10)
+                    ->required(),
                 Forms\Components\Checkbox::make('status_verval')
                     ->label('Verifikasi')
                     ->helperText('Centang jika data sudah benar.')
-                    ->required(fn($record) => $record !== null)
+                    ->required(fn() => Auth::user()->is_admin !== 'Administrator'/* && fn($record) => $record !== */)
                 // ->hidden(Auth::user()->is_admin === 'Administrator'),
             ]);
     }
@@ -94,13 +138,13 @@ class SiswaResource extends Resource
             if ($siswa && $user->is_active || $user->is_admin === 'Administrator') {
                 return $table
                     ->columns([
-                        // Tables\Columns\IconColumn::make('is_active')
-                        //     ->label('Status Aktif')
-                        //     ->visible(Auth::user()->is_admin === 'Administrator')
-                        //     ->boolean(),
                         Tables\Columns\IconColumn::make('status_verval')
                             ->label('Status Verval')
                             ->boolean(),
+                        Tables\Columns\ImageColumn::make('file_foto')
+                            ->label('Foto')
+                            ->circular()
+                            ->defaultImageUrl('/favicon.ico'),
                         Tables\Columns\TextColumn::make('kelas.nama')
                             ->label('Kelas')
                             ->sortable(),
