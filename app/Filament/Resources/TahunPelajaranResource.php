@@ -10,7 +10,9 @@ use Filament\Tables\Table;
 use App\Models\TahunPelajaran;
 use Filament\Resources\Resource;
 use Illuminate\Support\Facades\Auth;
+use Filament\Tables\Actions\ActionGroup;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Tables\Enums\ActionsPosition;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\TahunPelajaranResource\Pages;
 use App\Filament\Resources\TahunPelajaranResource\RelationManagers;
@@ -74,12 +76,13 @@ class TahunPelajaranResource extends Resource
                         //     ->visible(Auth::user()->is_admin === 'Administrator'),
                     ])
                     ->actions([
-                        // Tables\Actions\ViewAction::make(),
-                        Tables\Actions\EditAction::make()
-                            ->visible(Auth::user()->is_admin === 'Administrator'),
-                        Tables\Actions\DeleteAction::make()
+                        ActionGroup::make([
+                            // Tables\Actions\ViewAction::make(),
+                            Tables\Actions\EditAction::make(),
+                            Tables\Actions\DeleteAction::make()
+                        ])
                             ->visible(Auth::user()->is_admin === 'Administrator')
-                    ])
+                    ], position: ActionsPosition::BeforeColumns)
                     ->bulkActions([
                         Tables\Actions\BulkActionGroup::make([
                             Tables\Actions\DeleteBulkAction::make(),

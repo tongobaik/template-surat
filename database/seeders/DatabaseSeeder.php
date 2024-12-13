@@ -80,21 +80,21 @@ class DatabaseSeeder extends Seeder
             'nisn' => '1234567890',
             'jenis_kelamin' => 'Perempuan',
             'kelas_id' => 1,
-            'status_verval' => null,
+            'status_verval' => 0,
         ]);
         Siswa::create([
-            'nama' => 'Yahya Zulfikri',
-            'nisn' => '0000971291',
-            'jenis_kelamin' => 'Laki-laki',
-            'kelas_id' => 2,
-            'status_verval' => null,
-        ]);
-        Siswa::create([
-            'nama' => 'Kelvin Widjayanto',
+            'nama' => 'Yahya Zulfikar',
             'nisn' => '1234567891',
             'jenis_kelamin' => 'Laki-laki',
+            'kelas_id' => 2,
+            'status_verval' => 0,
+        ]);
+        Siswa::create([
+            'nama' => 'Wilda Kharisma',
+            'nisn' => '1234567892',
+            'jenis_kelamin' => 'Perempuan',
             'kelas_id' => 3,
-            'status_verval' => null,
+            'status_verval' => 0,
         ]);
         User::factory()->create([
             'name' => 'Administrator',
@@ -103,23 +103,23 @@ class DatabaseSeeder extends Seeder
             'is_admin' => 'Administrator',
         ]);
         User::factory()->create([
-            'name' => 'Yahya Zulfikri',
-            'username' => '0000971291',
+            'name' => 'Pupung Munawaroh',
+            'username' => '1234567890',
+            'email' => '1234567890@mtsn1pandeglang.sch.id',
+            'is_active' => true,
+            'is_admin' => 'Siswa',
+        ]);
+        User::factory()->create([
+            'name' => 'Yahya Zulfikar',
+            'username' => '1234567891',
             'email' => '0000971291@mtsn1pandeglang.sch.id',
             'is_active' => true,
             'is_admin' => 'Siswa',
         ]);
         User::factory()->create([
-            'name' => 'Pupung Munawaroh',
-            'username' => '1234567890',
-            'email' => '1234567890@mtsn1pandeglang.sch.id',
-            'is_active' => false,
-            'is_admin' => 'Siswa',
-        ]);
-        User::factory()->create([
-            'name' => 'Kelvin Widjayanto',
-            'username' => '1234567891',
-            'email' => '1234567891@mtsn1pandeglang.sch.id',
+            'name' => 'Wilda Kharisma',
+            'username' => '1234567892',
+            'email' => '1234567892@mtsn1pandeglang.sch.id',
             'is_active' => true,
             'is_admin' => 'Siswa',
         ]);

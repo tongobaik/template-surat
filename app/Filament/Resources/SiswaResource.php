@@ -51,6 +51,7 @@ class SiswaResource extends Resource
                     ->required(fn($record) => $record !== null),
                 Forms\Components\DatePicker::make('tanggal_lahir')
                     ->label('Tanggal Lahir')
+                    ->maxDate(now())
                     ->helperText('Sesuaikan dengan data Ijazah SD/MI.')
                     ->required(fn($record) => $record !== null),
                 Forms\Components\TextInput::make('nama_ayah')
@@ -79,6 +80,7 @@ class SiswaResource extends Resource
                     ->image()
                     ->fetchFileInformation(false)
                     ->imageEditor()
+                    ->downloadable(true)
                     ->imageEditorAspectRatios([
                         null,
                         '1:1',
@@ -94,7 +96,7 @@ class SiswaResource extends Resource
                     ->directory('img/kk')
                     ->image()
                     ->fetchFileInformation(false)
-
+                    ->downloadable(true)
                     ->imageEditor()
                     ->imageEditorAspectRatios([
                         null,
@@ -107,7 +109,7 @@ class SiswaResource extends Resource
                     ->minSize(10)
                     ->required(),
                 FileUpload::make('file_ijazah')
-                    ->label('Ijazah')
+                    ->label('Ijazah SD/MI')
                     ->directory('img/ijazah')
                     ->fetchFileInformation(false)
                     ->image()
@@ -121,6 +123,7 @@ class SiswaResource extends Resource
                     ->directory(fn() => 'img/' . Auth::user()->username . '/ijazah')
                     ->maxSize(1024)
                     ->minSize(10)
+                    ->downloadable(true)
                     ->required(),
                 Forms\Components\Checkbox::make('status_verval')
                     ->label('Verifikasi')

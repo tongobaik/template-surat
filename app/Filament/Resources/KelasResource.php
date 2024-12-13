@@ -10,7 +10,9 @@ use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Illuminate\Support\Facades\Auth;
+use Filament\Tables\Actions\ActionGroup;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Tables\Enums\ActionsPosition;
 use App\Filament\Resources\KelasResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\KelasResource\RelationManagers;
@@ -76,11 +78,13 @@ class KelasResource extends Resource
                     ])
                     ->filters([])
                     ->actions([
-                        Tables\Actions\EditAction::make()
-                            ->visible(Auth::user()->is_admin === 'Administrator'),
-                        Tables\Actions\DeleteAction::make()
+                        ActionGroup::make([
+                            // Tables\Actions\ViewAction::make(),
+                            Tables\Actions\EditAction::make(),
+                            Tables\Actions\DeleteAction::make()
+                        ])
                             ->visible(Auth::user()->is_admin === 'Administrator')
-                    ])
+                    ], position: ActionsPosition::BeforeColumns)
                     ->bulkActions([
                         Tables\Actions\BulkActionGroup::make([
                             Tables\Actions\DeleteBulkAction::make(),
