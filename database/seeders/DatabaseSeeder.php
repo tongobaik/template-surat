@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // TahunPelajaran
         TahunPelajaran::create([
             'nama' => '2024/2025',
             'is_active' => true,
@@ -25,6 +26,8 @@ class DatabaseSeeder extends Seeder
             'nama' => '2025/2026',
             'is_active' => false,
         ]);
+
+        // Kelas
         Kelas::create([
             'nama' => 'XI A',
             'tingkat' => 'XI',
@@ -75,53 +78,40 @@ class DatabaseSeeder extends Seeder
             'tingkat' => 'XI',
             'tahun_pelajaran_id' => 1,
         ]);
-        Siswa::create([
-            'nama' => 'Pupung Munawaroh',
-            'nisn' => '1234567890',
-            'jenis_kelamin' => 'Perempuan',
-            'kelas_id' => 1,
-            'status_verval' => 0,
-        ]);
-        Siswa::create([
-            'nama' => 'Yahya Zulfikar',
-            'nisn' => '1234567891',
-            'jenis_kelamin' => 'Laki-laki',
-            'kelas_id' => 2,
-            'status_verval' => 0,
-        ]);
-        Siswa::create([
-            'nama' => 'Wilda Kharisma',
-            'nisn' => '1234567892',
-            'jenis_kelamin' => 'Perempuan',
-            'kelas_id' => 3,
-            'status_verval' => 0,
-        ]);
+
+
+        // Siswa
+        // Siswa::create(['nama' => 'NAMA SISWA', 'nisn' => 'NISN SISWA', 'nik' => 'NIK SISWA', 'tempat_lahir' => 'TEMPAT LAHIR', 'tanggal_lahir' => 'TANGGAL LAHIR', 'jenis_kelamin' => 'JENIS KELAMIN', 'nama_ayah' => 'NAMA AYAH', 'nama_ayah' => 'NAMA IBU', 'kelas_id' => 1, 'status_verval' => 0,]);
+        Siswa::create(['nama' => 'NAMA SISWA', 'nisn' => '1234567890', 'nik' => '1234567890123456', 'tempat_lahir' => 'TEMPAT LAHIR', 'tanggal_lahir' => '2000-01-14', 'jenis_kelamin' => 'Laki-laki', 'nama_ayah' => 'NAMA AYAH', 'nama_ibu' => 'NAMA IBU', 'kelas_id' => 1, 'status_verval' => 0,]);
+
+        // Kelas IX A : kelas_id = 1
+
+        // Kelas IX B : kelas_id = 2
+
+        // Kelas IX C : kelas_id = 3
+
+        // Kelas IX D : kelas_id = 4
+
+        // Kelas IX E : kelas_id = 5
+
+        // Kelas IX F : kelas_id = 6
+
+        // Kelas IX G : kelas_id = 7
+
+        // Kelas IX H : kelas_id = 8
+
+        // Kelas IX I : kelas_id = 9
+
+        // Kelas IX J : kelas_id = 10
+
+
+        // User
         User::factory()->create([
             'name' => 'Administrator',
             'email' => 'adm@mtsn1pandeglang.sch.id',
             'is_active' => true,
             'is_admin' => 'Administrator',
         ]);
-        User::factory()->create([
-            'name' => 'Pupung Munawaroh',
-            'username' => '1234567890',
-            'email' => '1234567890@mtsn1pandeglang.sch.id',
-            'is_active' => true,
-            'is_admin' => 'Siswa',
-        ]);
-        User::factory()->create([
-            'name' => 'Yahya Zulfikar',
-            'username' => '1234567891',
-            'email' => '0000971291@mtsn1pandeglang.sch.id',
-            'is_active' => true,
-            'is_admin' => 'Siswa',
-        ]);
-        User::factory()->create([
-            'name' => 'Wilda Kharisma',
-            'username' => '1234567892',
-            'email' => '1234567892@mtsn1pandeglang.sch.id',
-            'is_active' => true,
-            'is_admin' => 'Siswa',
-        ]);
+        User::factory()->create(['name' => 'Pupung Munawaroh', 'username' => '1234567890', 'email' => '1234567890@mtsn1pandeglang.sch.id', 'is_active' => true, 'is_admin' => 'Siswa',]);
     }
 }

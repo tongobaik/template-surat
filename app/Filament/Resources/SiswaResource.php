@@ -8,7 +8,9 @@ use App\Models\Siswa;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
+use Illuminate\Support\HtmlString;
 use Illuminate\Support\Facades\Auth;
+use Filament\Forms\Components\Section;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Forms\Components\FileUpload;
 use Illuminate\Database\Eloquent\Builder;
@@ -21,6 +23,7 @@ class SiswaResource extends Resource
 {
     protected static ?string $model = Siswa::class;
     protected static ?string $label = 'Siswa';
+    protected static ?string $recordTitleAttribute = 'nama';
     protected static ?int $navigationSort = 1;
 
     protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
@@ -32,104 +35,119 @@ class SiswaResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('nama')
-                    ->label('Nama Lengkap')
-                    ->helperText('Sesuaikan dengan data Ijazah SD/MI.')
-                    ->required()
-                    ->columnSpanFull(),
-                Forms\Components\TextInput::make('nisn')
-                    ->label('Nomor Induk Siswa Nasional (NISN)')
-                    ->required(fn($record) => $record !== null),
-                Forms\Components\TextInput::make('nik')
-                    ->label('Nomor Induk Kependudukan')
-                    ->maxLength(16)
-                    ->minLength(16)
-                    ->required(fn($record) => $record !== null),
-                Forms\Components\TextInput::make('tempat_lahir')
-                    ->label('Tempat Lahir')
-                    ->helperText('Sesuaikan dengan data Ijazah SD/MI.')
-                    ->required(fn($record) => $record !== null),
-                Forms\Components\DatePicker::make('tanggal_lahir')
-                    ->label('Tanggal Lahir')
-                    ->maxDate(now())
-                    ->helperText('Sesuaikan dengan data Ijazah SD/MI.')
-                    ->required(fn($record) => $record !== null),
-                Forms\Components\TextInput::make('nama_ayah')
-                    ->helperText('Sesuaikan dengan data Ijazah SD/MI.')
-                    ->label('Nama Ayah Kandung')
-                    ->required(fn($record) => $record !== null),
-                Forms\Components\TextInput::make('nama_ibu')
-                    ->label('Nama Ibu Kandung')
-                    ->helperText('Sesuaikan dengan data Ijazah SD/MI.')
-                    ->required(fn($record) => $record !== null),
-                Forms\Components\Select::make('kelas_id')
-                    ->label('Kelas')
-                    ->relationship('kelas', 'nama')
-                    ->visible(Auth::user()->is_admin === 'Administrator')
-                    ->required(),
-                Forms\Components\Select::make('jenis_kelamin')
-                    ->label('Jenis Kelamin')
-                    ->options([
-                        'Laki-Laki' => 'Laki-Laki',
-                        'Perempuan' => 'Perempuan',
+                Section::make('Biodata Siswa')
+                    ->description('Sesuaikan dengan Data Ijazah SD/MI.')
+                    ->icon('heroicon-m-user')
+                    ->iconColor('primary')
+                    ->schema([
+                        Forms\Components\Select::make('kelas_id')
+                            ->label('Kelas')
+                            ->relationship('kelas', 'nama')
+                            ->disabled(Auth::user()->is_admin === 'Siswa')
+                            ->required()
+                            ->columnSpanFull(),
+                        Forms\Components\TextInput::make('nama')
+                            ->label('Nama Lengkap')
+                            ->required(),
+                        Forms\Components\Select::make('jenis_kelamin')
+                            ->label('Jenis Kelamin')
+                            ->options([
+                                'Laki-Laki' => 'Laki-Laki',
+                                'Perempuan' => 'Perempuan',
+                            ])
+                            ->native(false)
+                            ->required(),
+                        Forms\Components\TextInput::make('tempat_lahir')
+                            ->label('Tempat Lahir')
+                            ->required(fn($record) => $record !== null),
+                        Forms\Components\DatePicker::make('tanggal_lahir')
+                            ->label('Tanggal Lahir')
+                            ->maxDate(now())
+                            ->required(fn($record) => $record !== null),
+                        Forms\Components\TextInput::make('nama_ayah')
+                            ->label('Nama Ayah Kandung')
+                            ->required(fn($record) => $record !== null),
+                        Forms\Components\TextInput::make('nama_ibu')
+                            ->label('Nama Ibu Kandung')
+                            ->required(fn($record) => $record !== null),
+                        Forms\Components\TextInput::make('nisn')
+                            ->label('Nomor Induk Siswa Nasional (NISN)')
+                            ->required(fn($record) => $record !== null),
+                        Forms\Components\TextInput::make('nik')
+                            ->label('Nomor Induk Kependudukan')
+                            ->helperText('Sesuaikan dengan data Kartu Keluarga.')
+                            ->maxLength(16)
+                            ->minLength(16)
+                            ->required(fn($record) => $record !== null),
+                    ])->columns(2),
+                Section::make('Unggah Gambar')
+                    ->description('Ukuran maksimal unggah : 1 MB/File.')
+                    ->icon('heroicon-m-photo')
+                    ->iconColor('primary')
+                    ->schema([
+                        FileUpload::make('file_foto')
+                            ->label('Foto Formal')
+                            ->image()
+                            ->fetchFileInformation(false)
+                            ->imageEditor()
+                            ->downloadable(true)
+                            ->imageEditorAspectRatios([
+                                null,
+                                '1:1',
+                                '4:3',
+                                '3:4',
+                            ])
+                            ->directory(fn() => 'img/' . Auth::user()->username . '/foto')
+                            ->maxSize(1024)
+                            ->minSize(10)
+                            ->required(),
+                        FileUpload::make('file_kk')
+                            ->label('Kartu Keluarga')
+                            ->directory('img/kk')
+                            ->image()
+                            ->fetchFileInformation(false)
+                            ->downloadable(true)
+                            ->imageEditor()
+                            ->imageEditorAspectRatios([
+                                null,
+                                '1:1',
+                                '4:3',
+                                '3:4',
+                            ])
+                            ->directory(fn() => 'img/' . Auth::user()->username . '/kk')
+                            ->maxSize(1024)
+                            ->minSize(10)
+                            ->required(),
+                        FileUpload::make('file_ijazah')
+                            ->label('Ijazah SD/MI')
+                            ->directory('img/ijazah')
+                            ->fetchFileInformation(false)
+                            ->image()
+                            ->imageEditor()
+                            ->imageEditorAspectRatios([
+                                null,
+                                '1:1',
+                                '4:3',
+                                '3:4',
+                            ])
+                            ->directory(fn() => 'img/' . Auth::user()->username . '/ijazah')
+                            ->maxSize(1024)
+                            ->minSize(10)
+                            ->downloadable(true)
+                            ->required(),
+                    ])->columns(3),
+
+                Section::make('Verifikasi Data')
+                    ->description('Harap periksa kembali data yang telah diisi!')
+                    ->icon('heroicon-m-check-badge')
+                    ->iconColor('primary')
+                    ->schema([
+                        Forms\Components\Checkbox::make('status_verval')
+                            ->label('Verifikasi')
+                            ->helperText(new HtmlString('<strong>Biodata yang saya kirim adalah benar dan dapat dipertanggung jawabkan!</strong><br/>Centang jika data sudah benar.'))
+                            ->required(fn() => Auth::user()->is_admin !== 'Administrator'/* && fn($record) => $record !== */)
+                        // ->hidden(Auth::user()->is_admin === 'Administrator'),
                     ])
-                    ->native(false)
-                    ->required(),
-                FileUpload::make('file_foto')
-                    ->label('Foto Formal')
-                    ->image()
-                    ->fetchFileInformation(false)
-                    ->imageEditor()
-                    ->downloadable(true)
-                    ->imageEditorAspectRatios([
-                        null,
-                        '1:1',
-                        '4:3',
-                        '3:4',
-                    ])
-                    ->directory(fn() => 'img/' . Auth::user()->username . '/foto')
-                    ->maxSize(1024)
-                    ->minSize(10)
-                    ->required(),
-                FileUpload::make('file_kk')
-                    ->label('Kartu Keluarga')
-                    ->directory('img/kk')
-                    ->image()
-                    ->fetchFileInformation(false)
-                    ->downloadable(true)
-                    ->imageEditor()
-                    ->imageEditorAspectRatios([
-                        null,
-                        '1:1',
-                        '4:3',
-                        '3:4',
-                    ])
-                    ->directory(fn() => 'img/' . Auth::user()->username . '/kk')
-                    ->maxSize(1024)
-                    ->minSize(10)
-                    ->required(),
-                FileUpload::make('file_ijazah')
-                    ->label('Ijazah SD/MI')
-                    ->directory('img/ijazah')
-                    ->fetchFileInformation(false)
-                    ->image()
-                    ->imageEditor()
-                    ->imageEditorAspectRatios([
-                        null,
-                        '1:1',
-                        '4:3',
-                        '3:4',
-                    ])
-                    ->directory(fn() => 'img/' . Auth::user()->username . '/ijazah')
-                    ->maxSize(1024)
-                    ->minSize(10)
-                    ->downloadable(true)
-                    ->required(),
-                Forms\Components\Checkbox::make('status_verval')
-                    ->label('Verifikasi')
-                    ->helperText('Centang jika data sudah benar.')
-                    ->required(fn() => Auth::user()->is_admin !== 'Administrator'/* && fn($record) => $record !== */)
-                // ->hidden(Auth::user()->is_admin === 'Administrator'),
             ]);
     }
 
