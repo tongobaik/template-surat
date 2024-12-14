@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources\SiswaResource\Pages;
 
-use App\Filament\Resources\SiswaResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ViewRecord;
+use App\Filament\Resources\SiswaResource;
 
 class ViewSiswa extends ViewRecord
 {
@@ -13,7 +13,7 @@ class ViewSiswa extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\EditAction::make(),
+            // Actions\EditAction::make(),
         ];
     }
 }

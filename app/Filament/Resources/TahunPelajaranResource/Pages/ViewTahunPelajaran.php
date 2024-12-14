@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources\TahunPelajaranResource\Pages;
 
-use App\Filament\Resources\TahunPelajaranResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ViewRecord;
+use App\Filament\Resources\TahunPelajaranResource;
 
 class ViewTahunPelajaran extends ViewRecord
 {
@@ -13,7 +13,7 @@ class ViewTahunPelajaran extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\EditAction::make(),
+            // Actions\EditAction::make(),
         ];
     }
 }

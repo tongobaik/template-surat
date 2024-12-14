@@ -16,6 +16,9 @@ use Filament\Tables\Enums\ActionsPosition;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\TahunPelajaranResource\Pages;
 use App\Filament\Resources\TahunPelajaranResource\RelationManagers;
+// use App\Filament\Resources\KelasResource\RelationManagers\SiswasRelationManager;
+use App\Filament\Resources\TahunPelajaranResource\RelationManagers\KelasRelationManager;
+use App\Filament\Resources\TahunPelajaranResource\RelationManagers\SiswasRelationManager;
 
 class TahunPelajaranResource extends Resource
 {
@@ -71,13 +74,10 @@ class TahunPelajaranResource extends Resource
                             ->sortable()
                             ->toggleable(isToggledHiddenByDefault: true),
                     ])
-                    ->filters([
-                        // Tables\Filters\TrashedFilter::make()
-                        //     ->visible(Auth::user()->is_admin === 'Administrator'),
-                    ])
+                    ->filters([])
                     ->actions([
                         ActionGroup::make([
-                            // Tables\Actions\ViewAction::make(),
+                            Tables\Actions\ViewAction::make(),
                             Tables\Actions\EditAction::make(),
                             Tables\Actions\DeleteAction::make()
                         ])
@@ -100,7 +100,8 @@ class TahunPelajaranResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            KelasRelationManager::class,
+            SiswasRelationManager::class,
         ];
     }
 
@@ -112,6 +113,7 @@ class TahunPelajaranResource extends Resource
             if ($siswa && $user->is_active || $user->is_admin === 'Administrator') {
                 return [
                     'index' => Pages\ListTahunPelajarans::route('/'),
+                    'view' => Pages\ViewTahunPelajaran::route('/{record}'),
                 ];
             }
         }

@@ -1,38 +1,25 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Resources\TahunPelajaranResource\RelationManagers;
 
 use Filament\Forms;
 use Filament\Tables;
-use App\Models\Kelas;
 use App\Models\Siswa;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
-use Filament\Resources\Resource;
 use Illuminate\Support\Facades\Auth;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Enums\ActionsPosition;
-use App\Filament\Resources\KelasResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Illuminate\Database\Eloquent\Relations\Relation;
 use Filament\Resources\RelationManagers\RelationManager;
-use App\Filament\Resources\KelasResource\RelationManagers;
-use App\Filament\Resources\KelasResource\RelationManagers\SiswasRelationManager;
 
-class KelasResource extends Resource
+class KelasRelationManager extends RelationManager
 {
-    protected static ?string $model = Kelas::class;
-    protected static ?string $label = 'Rombel/Kelas';
-    protected static ?int $navigationSort = 2;
-    public static function getNavigationBadge(): ?string
-    {
-        return static::getModel()::count();
-    }
-    protected static ?string $navigationIcon = 'heroicon-o-building-storefront';
+    protected static string $relationship = 'kelas';
 
-    public static function form(Form $form): Form
+    public function form(Form $form): Form
     {
         return $form
             ->schema([
@@ -57,7 +44,7 @@ class KelasResource extends Resource
             ]);
     }
 
-    public static function table(Table $table): Table
+    public function table(Table $table): Table
     {
         if (Auth::check()) {
             $user = Auth::user();
@@ -82,9 +69,6 @@ class KelasResource extends Resource
                             ->toggleable(isToggledHiddenByDefault: true),
                     ])
                     ->filters([
-                        SelectFilter::make('tahun_pelajaran_id')
-                            ->label('Tahun Pelajaran')
-                            ->relationship('tahunPelajaran', 'nama'),
                         SelectFilter::make('tingkat')
                             ->label('Tingkat')
                             ->options([
@@ -95,7 +79,7 @@ class KelasResource extends Resource
                     ])
                     ->actions([
                         ActionGroup::make([
-                            Tables\Actions\ViewAction::make(),
+                            // Tables\Actions\ViewAction::make(),
                             Tables\Actions\EditAction::make(),
                             Tables\Actions\DeleteAction::make()
                         ])
@@ -112,32 +96,5 @@ class KelasResource extends Resource
             }
             return $table->columns([]);
         }
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            SiswasRelationManager::class,
-        ];
-    }
-
-    public static function getPages(): array
-    {
-        if (Auth::check()) {
-            $user = Auth::user();
-            $siswa = Siswa::where('nisn', $user->username)->first();
-            if ($siswa && $user->is_active || $user->is_admin === 'Administrator') {
-                return [
-                    'index' => Pages\ListKelas::route('/'),
-                    'view' => Pages\ViewKelas::route('/{record}'),
-                ];
-            }
-        }
-        return [
-            'index' => Pages\ListKelas::route('/'),
-            'create' => Pages\CreateKelas::route('/create'),
-            'view' => Pages\ViewKelas::route('/{record}'),
-            'edit' => Pages\EditKelas::route('/{record}/edit'),
-        ];
     }
 }

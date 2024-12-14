@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources\KelasResource\Pages;
 
-use App\Filament\Resources\KelasResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ViewRecord;
+use App\Filament\Resources\KelasResource;
 
 class ViewKelas extends ViewRecord
 {
@@ -13,7 +13,7 @@ class ViewKelas extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\EditAction::make(),
+            // Actions\EditAction::make(),
         ];
     }
 }

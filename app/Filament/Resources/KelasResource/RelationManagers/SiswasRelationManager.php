@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Resources\KelasResource\RelationManagers;
 
 use Filament\Forms;
 use Filament\Tables;
@@ -8,8 +8,6 @@ use App\Models\Kelas;
 use App\Models\Siswa;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
-use Illuminate\Validation\Rule;
-use Filament\Resources\Resource;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Section;
@@ -19,25 +17,14 @@ use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Enums\ActionsPosition;
 use Filament\Tables\Filters\TrashedFilter;
-use App\Filament\Resources\SiswaResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\SiswaResource\RelationManagers;
+use Filament\Resources\RelationManagers\RelationManager;
 
-class SiswaResource extends Resource
+class SiswasRelationManager extends RelationManager
 {
-    protected static ?string $model = Siswa::class;
-    protected static ?string $label = 'Siswa';
-    protected static ?string $recordTitleAttribute = 'nama';
-    protected static ?int $navigationSort = 1;
+    protected static string $relationship = 'siswa';
 
-    protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
-    public static function getNavigationBadge(): ?string
-    {
-        $total_siswa = static::getModel()::count();
-        $total_siswa_verval = static::getModel()::where('status_verval', true)->count();
-        return "Verval : $total_siswa_verval / $total_siswa";
-    }
-    public static function form(Form $form): Form
+    public function form(Form $form): Form
     {
         return $form
             ->schema([
@@ -86,9 +73,9 @@ class SiswaResource extends Resource
                             ->required(fn($record) => $record !== null),
                         Forms\Components\TextInput::make('nisn')
                             ->label('Nomor Induk Siswa Nasional (NISN)')
+                            ->unique(Siswa::class, 'nisn', ignoreRecord: true)
                             ->maxLength(10)
                             ->minLength(10)
-                            ->unique(Siswa::class, 'nisn', ignoreRecord: true)
                             ->validationMessages([
                                 'unique' => 'NISN ini sudah terdaftar. Silakan masukkan ulang NISN anda.',
                                 'min_digits' => 'Masukkan minimal 10 digit. Silakan masukkan ulang NISN anda.',
@@ -101,7 +88,7 @@ class SiswaResource extends Resource
                             ->helperText('Sesuaikan dengan data Kartu Keluarga.')
                             ->maxLength(16)
                             ->minLength(16)
-                            ->unique(Siswa::class, 'nisn', ignoreRecord: true)
+                            ->unique(Siswa::class, 'nik', ignoreRecord: true)
                             ->validationMessages([
                                 'unique' => 'NIK ini sudah terdaftar. Silakan masukkan ulang NIK anda.',
                                 'min_digits' => 'Masukkan minimal 16 digit. Silakan masukkan ulang NIK anda.',
@@ -190,138 +177,94 @@ class SiswaResource extends Resource
             ]);
     }
 
-    public static function table(Table $table): Table
+    public function table(Table $table): Table
     {
-        if (Auth::check()) {
-            $user = Auth::user();
-            $siswa = Siswa::where('nisn', $user->username)->first();
-            if ($siswa && $user->is_active || $user->is_admin === 'Administrator') {
-                return $table
-                    ->columns([
-                        Tables\Columns\IconColumn::make('status_verval')
-                            ->label('Status Verval')
-                            ->alignCenter()
-                            ->boolean(),
-                        Tables\Columns\ImageColumn::make('file_foto')
-                            ->label('Foto')
-                            ->circular()
-                            ->alignCenter()
-                            ->defaultImageUrl('/favicon.ico'),
-                        Tables\Columns\TextColumn::make('kelas.nama')
-                            ->label('Kelas')
-                            ->sortable(),
-                        Tables\Columns\TextColumn::make('nama')
-                            ->label('Nama Lengkap')
-                            ->searchable(),
-                        Tables\Columns\TextColumn::make('nisn')
-                            ->label('NISN')
-                            ->searchable(),
-                        Tables\Columns\TextColumn::make('nik')
-                            ->visible(Auth::user()->is_admin === 'Administrator')
-                            ->label('NIK')
-                            ->searchable(),
-                        Tables\Columns\TextColumn::make('tempat_lahir')
-                            ->label('Tempat Lahir')
-                            ->searchable(),
-                        Tables\Columns\TextColumn::make('tanggal_lahir')
-                            ->label('Tanggal Lahir')
-                            ->date('d-m-Y')
-                            ->sortable(),
-                        Tables\Columns\TextColumn::make('jenis_kelamin')
-                            ->label('Jenis Kelamin')
-                            ->searchable(),
-                        Tables\Columns\TextColumn::make('nama_ayah')
-                            ->label('Nama Ayah Kandung')
-                            ->visible(Auth::user()->is_admin === 'Administrator')
-                            ->searchable(),
-                        Tables\Columns\TextColumn::make('nama_ibu')
-                            ->label('Nama Ibu Kandung')
-                            ->visible(Auth::user()->is_admin === 'Administrator')
-                            ->searchable(),
+        return $table
+            ->recordTitleAttribute('nama')
+            ->columns([
+                Tables\Columns\IconColumn::make('status_verval')
+                    ->label('Status Verval')
+                    ->alignCenter()
+                    ->boolean(),
+                Tables\Columns\ImageColumn::make('file_foto')
+                    ->label('Foto')
+                    ->alignCenter()
+                    ->circular()
+                    ->defaultImageUrl('/favicon.ico'),
+                Tables\Columns\TextColumn::make('kelas.nama')
+                    ->label('Kelas')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('nama')
+                    ->label('Nama Lengkap')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('nisn')
+                    ->label('NISN')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('nik')
+                    ->visible(Auth::user()->is_admin === 'Administrator')
+                    ->label('NIK')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('tempat_lahir')
+                    ->label('Tempat Lahir')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('tanggal_lahir')
+                    ->label('Tanggal Lahir')
+                    ->date('d-m-Y')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('jenis_kelamin')
+                    ->label('Jenis Kelamin')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('nama_ayah')
+                    ->label('Nama Ayah Kandung')
+                    ->visible(Auth::user()->is_admin === 'Administrator')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('nama_ibu')
+                    ->label('Nama Ibu Kandung')
+                    ->visible(Auth::user()->is_admin === 'Administrator')
+                    ->searchable(),
 
-                        Tables\Columns\TextColumn::make('deleted_at')
-                            ->dateTime()
-                            ->sortable()
-                            ->toggleable(isToggledHiddenByDefault: true),
-                        Tables\Columns\TextColumn::make('created_at')
-                            ->dateTime()
-                            ->sortable()
-                            ->toggleable(isToggledHiddenByDefault: true),
-                        Tables\Columns\TextColumn::make('updated_at')
-                            ->dateTime()
-                            ->sortable()
-                            ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('deleted_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->filters([
+                TrashedFilter::make()
+                    ->visible(Auth::user()->is_admin === 'Administrator'),
+                SelectFilter::make('status_verval')
+                    ->label('Status Verifikasi')
+                    ->options([
+                        1 => 'Verifikasi',
+                        0 => 'Belum Verifikasi'
                     ])
-                    ->filters([
-                        TrashedFilter::make()
-                            ->visible(Auth::user()->is_admin === 'Administrator'),
-                        SelectFilter::make('kelas_id')
-                            ->label('Kelas')
-                            ->relationship('kelas', 'nama'),
-                        SelectFilter::make('status_verval')
-                            ->label('Status Verifikasi')
-                            ->options([
-                                1 => 'Verifikasi',
-                                0 => 'Belum Verifikasi'
-                            ])
-                    ])
-                    ->actions([
-                        ActionGroup::make([
-                            // Tables\Actions\ViewAction::make(),
-                            Tables\Actions\EditAction::make(),
-                            Tables\Actions\DeleteAction::make()
-                        ])
-                            ->visible(Auth::user()->is_admin === 'Administrator')
-                    ], position: ActionsPosition::BeforeColumns)
-                    ->bulkActions([
-                        Tables\Actions\BulkActionGroup::make([
-                            Tables\Actions\DeleteBulkAction::make(),
-                            Tables\Actions\ForceDeleteBulkAction::make(),
-                            Tables\Actions\RestoreBulkAction::make(),
-                        ])
-                            ->visible(Auth::user()->is_admin === 'Administrator'),
-                    ]);
-            }
-            return $table
-                ->columns([]);
-        }
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
-    }
-
-    public static function getPages(): array
-    {
-        if (Auth::check()) {
-            $user = Auth::user();
-            $siswa = Siswa::where('nisn', $user->username)->first();
-            if ($siswa && $user->is_active || $user->is_admin === 'Administrator') {
-                return [
-                    'index' => Pages\ListSiswas::route('/'),
-                ];
-            }
-        }
-        return [
-            'index' => Pages\ListSiswas::route('/'),
-            'create' => Pages\CreateSiswa::route('/create'),
-            'view' => Pages\ViewSiswa::route('/{record}'),
-            'edit' => Pages\EditSiswa::route('/{record}/edit'),
-        ];
-    }
-
-
-
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()
-            ->withoutGlobalScopes(
-                [
-                    SoftDeletingScope::class,
-                ]
-            );
+            ])
+            ->headerActions([
+                Tables\Actions\CreateAction::make(),
+            ])
+            ->actions([
+                ActionGroup::make([
+                    // Tables\Actions\ViewAction::make(),
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make()
+                ])
+                    ->visible(Auth::user()->is_admin === 'Administrator')
+            ], position: ActionsPosition::BeforeColumns)
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\ForceDeleteBulkAction::make(),
+                    Tables\Actions\RestoreBulkAction::make(),
+                ])
+                    ->visible(Auth::user()->is_admin === 'Administrator'),
+            ]);
     }
 }

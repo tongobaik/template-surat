@@ -22,7 +22,10 @@ class UserResource extends Resource
     protected static ?string $model = User::class;
     protected static ?string $label = 'Pengguna';
     protected static ?int $navigationSort = 4;
-
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
     protected static ?string $navigationIcon = 'heroicon-o-users';
 
     public static function form(Form $form): Form

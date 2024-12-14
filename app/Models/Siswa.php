@@ -28,6 +28,7 @@ class Siswa extends Model
         'nama_ayah',
         'nama_ibu',
         'kelas_id',
+        'tahun_pelajaran_id',
         'status_verval',
         'file_foto',
         'file_kk',
@@ -44,11 +45,16 @@ class Siswa extends Model
         'tanggal_lahir' => 'date',
         'status_verval' => 'boolean',
         'kelas_id' => 'integer',
+        'tahun_pelajaran_id' => 'integer',
     ];
 
     public function kelas(): BelongsTo
     {
         return $this->belongsTo(Kelas::class);
+    }
+    public function tahunPelajaran(): BelongsTo
+    {
+        return $this->belongsTo(TahunPelajaran::class);
     }
     public function user(): HasMany
     {

@@ -13,8 +13,13 @@ export default {
         extend: {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                // sans: ['Poppins', ...defaultTheme.fontFamily.sans],
             },
         },
     },
     plugins: [],
+    presets: [ 
+        require('./vendor/filament/forms/tailwind.config'), 
+        require('./vendor/filament/tables/tailwind.config'), 
+    ], 
 };

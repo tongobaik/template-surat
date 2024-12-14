@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('nama_ayah')->nullable();
             $table->string('nama_ibu')->nullable();
             $table->foreignId('kelas_id')->constrained('kelas')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('tahun_pelajaran_id')->constrained('tahun_pelajarans')->cascadeOnDelete()->cascadeOnUpdate();
             $table->boolean('status_verval')->nullable();
             $table->string('file_foto')->nullable();
             $table->string('file_kk')->nullable();
