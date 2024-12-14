@@ -13,8 +13,10 @@ use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Section;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Forms\Components\FileUpload;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Enums\ActionsPosition;
+use Filament\Tables\Filters\TrashedFilter;
 use App\Filament\Resources\SiswaResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\SiswaResource\RelationManagers;
@@ -80,8 +82,8 @@ class SiswaResource extends Resource
                             ->minLength(16)
                             ->required(fn($record) => $record !== null),
                     ])->columns(2),
-                Section::make('Unggah Gambar')
-                    ->description('Ukuran maksimal unggah : 1 MB/File.')
+                Section::make('Unggah File')
+                    ->description('Ukuran maksimal unggah : 10 MB/File.')
                     ->icon('heroicon-m-photo')
                     ->iconColor('primary')
                     ->schema([
@@ -98,7 +100,7 @@ class SiswaResource extends Resource
                                 '3:4',
                             ])
                             ->directory(fn() => 'img/' . Auth::user()->username . '/foto')
-                            ->maxSize(1024)
+                            ->maxSize(10240)
                             ->minSize(10)
                             ->required(),
                         FileUpload::make('file_kk')
@@ -115,23 +117,23 @@ class SiswaResource extends Resource
                                 '3:4',
                             ])
                             ->directory(fn() => 'img/' . Auth::user()->username . '/kk')
-                            ->maxSize(1024)
+                            ->maxSize(10240)
                             ->minSize(10)
                             ->required(),
                         FileUpload::make('file_ijazah')
                             ->label('Ijazah SD/MI')
                             ->directory('img/ijazah')
                             ->fetchFileInformation(false)
-                            ->image()
-                            ->imageEditor()
-                            ->imageEditorAspectRatios([
-                                null,
-                                '1:1',
-                                '4:3',
-                                '3:4',
-                            ])
+                            // ->image()
+                            // ->imageEditor()
+                            // ->imageEditorAspectRatios([
+                            //     null,
+                            //     '1:1',
+                            //     '4:3',
+                            //     '3:4',
+                            // ])
                             ->directory(fn() => 'img/' . Auth::user()->username . '/ijazah')
-                            ->maxSize(1024)
+                            ->maxSize(10240)
                             ->minSize(10)
                             ->downloadable(true)
                             ->required(),
@@ -212,8 +214,17 @@ class SiswaResource extends Resource
                             ->toggleable(isToggledHiddenByDefault: true),
                     ])
                     ->filters([
-                        Tables\Filters\TrashedFilter::make()
+                        TrashedFilter::make()
                             ->visible(Auth::user()->is_admin === 'Administrator'),
+                        SelectFilter::make('kelas_id')
+                            ->label('Kelas')
+                            ->relationship('kelas', 'nama'),
+                        SelectFilter::make('status_verval')
+                            ->label('Status Verifikasi')
+                            ->options([
+                                1 => 'Verifikasi',
+                                0 => 'Belum Verifikasi'
+                            ])
                     ])
                     ->actions([
                         ActionGroup::make([
