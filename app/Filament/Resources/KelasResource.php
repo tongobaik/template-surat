@@ -8,6 +8,7 @@ use App\Models\Kelas;
 use App\Models\Siswa;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\TahunPelajaran;
 use Filament\Resources\Resource;
 use Illuminate\Support\Facades\Auth;
 use Filament\Tables\Actions\ActionGroup;
@@ -19,6 +20,8 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Filament\Resources\RelationManagers\RelationManager;
 use App\Filament\Resources\KelasResource\RelationManagers;
+use IbrahimBougaoua\FilaProgress\Tables\Columns\ProgressBar;
+use IbrahimBougaoua\FilaProgress\Tables\Columns\CircleProgress;
 use App\Filament\Resources\KelasResource\RelationManagers\SiswasRelationManager;
 
 class KelasResource extends Resource
@@ -28,7 +31,13 @@ class KelasResource extends Resource
     protected static ?int $navigationSort = 2;
     public static function getNavigationBadge(): ?string
     {
-        return static::getModel()::count();
+        $tahunAktif = TahunPelajaran::where('is_active', true)->first();
+
+        if ($tahunAktif) {
+            $total_kelas = static::getModel()::where('tahun_pelajaran_id', $tahunAktif->id)->count();
+            return $total_kelas;
+        }
+        return null;
     }
     protected static ?string $navigationIcon = 'heroicon-o-building-storefront';
 
@@ -62,7 +71,7 @@ class KelasResource extends Resource
         if (Auth::check()) {
             $user = Auth::user();
             $siswa = Siswa::where('nisn', $user->username)->first();
-            if ($siswa && $user->is_active || $user->is_admin === 'Administrator') {
+            if (($siswa && $user->is_active) || $user->is_admin === 'Administrator') {
                 return $table
                     ->columns([
                         Tables\Columns\TextColumn::make('nama')

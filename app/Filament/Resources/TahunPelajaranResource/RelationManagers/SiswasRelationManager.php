@@ -96,6 +96,18 @@ class SiswasRelationManager extends RelationManager
                             ->maxLength(16)
                             ->minLength(16)
                             ->required(fn($record) => $record !== null),
+                        Forms\Components\TextInput::make('nomor_telepon')
+                            ->label('Nomor Telepon')
+                            ->helperText('Masukkan nomor telepon/whatsapp.')
+                            ->maxLength(13)
+                            ->minLength(10)
+                            ->validationMessages([
+                                'min_digits' => 'Masukkan minimal 10 digit. Silakan masukkan ulang Nomor Telepon anda.',
+                                'max_digits' => 'Masukkan maksimal 13 digit. Silakan masukkan ulang Nomor Telepon anda.',
+                            ])
+                            ->numeric()
+                            ->required(fn($record) => $record !== null)
+                            ->columnSpanFull(),
                     ])->columns(2),
                 Section::make('Unggah File')
                     ->description('Ukuran maksimal unggah : 10 MB/File.')
@@ -203,6 +215,10 @@ class SiswasRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('nik')
                     ->visible(Auth::user()->is_admin === 'Administrator')
                     ->label('NIK')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('nomor_telepon')
+                    ->visible(Auth::user()->is_admin === 'Administrator')
+                    ->label('Nomor Telepon')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('tempat_lahir')
                     ->label('Tempat Lahir')

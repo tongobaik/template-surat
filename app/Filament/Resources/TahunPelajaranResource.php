@@ -24,7 +24,11 @@ class TahunPelajaranResource extends Resource
 {
     protected static ?string $model = TahunPelajaran::class;
     protected static ?string $label = 'Tahun Pelajaran';
-
+    public static function getNavigationBadge(): ?string
+    {
+        $tahunAktif = static::getModel()::where('is_active', true)->first();
+        return $tahunAktif ? $tahunAktif->nama : null;
+    }
     protected static ?string $navigationIcon = 'heroicon-o-calendar';
     protected static ?int $navigationSort = 3;
 

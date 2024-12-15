@@ -34,7 +34,8 @@ class ListSiswas extends ListRecords
             Actions\CreateAction::make()
                 ->visible(Auth::user()->is_admin === 'Administrator'),
             Action::make('Verval Data')
-                ->label("Verifikasi $name")
+                ->label("VERIFIKASI $name")
+                ->icon('heroicon-m-check-badge')
                 ->url($url)
                 ->color('danger')
                 ->visible($status_verval && $user->is_active === true)
@@ -43,5 +44,3 @@ class ListSiswas extends ListRecords
         ];
     }
 }
-$username = "Tamu";
-$url = "#";

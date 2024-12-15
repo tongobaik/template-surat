@@ -23,12 +23,17 @@ return new class extends Migration
             $table->string('jenis_kelamin')->enum("Laki-laki", "Perempuan");
             $table->string('nama_ayah')->nullable();
             $table->string('nama_ibu')->nullable();
-            $table->foreignId('kelas_id')->constrained('kelas')->cascadeOnDelete()->cascadeOnUpdate();
-            $table->foreignId('tahun_pelajaran_id')->constrained('tahun_pelajarans')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('kelas_id')->constrained('kelas')->cascadeOnDelete();
+            $table->foreignId('tahun_pelajaran_id')->constrained('tahun_pelajarans')->cascadeOnDelete();
             $table->boolean('status_verval')->nullable();
             $table->string('file_foto')->nullable();
             $table->string('file_kk')->nullable();
             $table->string('file_ijazah')->nullable();
+
+            $table->string('nomor_telepon')->nullable();
+            $table->string('email')->nullable();
+            $table->string('password')->nullable();
+            $table->string('qr_code')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

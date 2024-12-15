@@ -33,6 +33,10 @@ class Siswa extends Model
         'file_foto',
         'file_kk',
         'file_ijazah',
+        'nomor_telepon',
+        'email',
+        'password',
+        'qr_code',
     ];
 
     /**
@@ -46,6 +50,7 @@ class Siswa extends Model
         'status_verval' => 'boolean',
         'kelas_id' => 'integer',
         'tahun_pelajaran_id' => 'integer',
+        'password' => 'hashed',
     ];
 
     public function kelas(): BelongsTo

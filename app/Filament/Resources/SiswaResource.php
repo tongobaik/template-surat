@@ -4,11 +4,10 @@ namespace App\Filament\Resources;
 
 use Filament\Forms;
 use Filament\Tables;
-use App\Models\Kelas;
 use App\Models\Siswa;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
-use Illuminate\Validation\Rule;
+use App\Models\TahunPelajaran;
 use Filament\Resources\Resource;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\Facades\Auth;
@@ -21,7 +20,6 @@ use Filament\Tables\Enums\ActionsPosition;
 use Filament\Tables\Filters\TrashedFilter;
 use App\Filament\Resources\SiswaResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\SiswaResource\RelationManagers;
 
 class SiswaResource extends Resource
 {
@@ -33,9 +31,14 @@ class SiswaResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
     public static function getNavigationBadge(): ?string
     {
-        $total_siswa = static::getModel()::count();
-        $total_siswa_verval = static::getModel()::where('status_verval', true)->count();
-        return "Verval : $total_siswa_verval / $total_siswa";
+        $tahunAktif = TahunPelajaran::where('is_active', true)->first();
+
+        if ($tahunAktif) {
+            $total_siswa = static::getModel()::where('tahun_pelajaran_id', $tahunAktif->id)->count();
+            $total_siswa_verval = static::getModel()::where('tahun_pelajaran_id', $tahunAktif->id)->where('status_verval', true)->count();
+            return "Verval : $total_siswa_verval / $total_siswa";
+        }
+        return null;
     }
     public static function form(Form $form): Form
     {
@@ -109,6 +112,18 @@ class SiswaResource extends Resource
                             ])
                             ->numeric()
                             ->required(fn($record) => $record !== null),
+                        Forms\Components\TextInput::make('nomor_telepon')
+                            ->label('Nomor Telepon')
+                            ->helperText('Masukkan nomor telepon/whatsapp.')
+                            ->maxLength(13)
+                            ->minLength(10)
+                            ->validationMessages([
+                                'min_digits' => 'Masukkan minimal 10 digit. Silakan masukkan ulang Nomor Telepon anda.',
+                                'max_digits' => 'Masukkan maksimal 13 digit. Silakan masukkan ulang Nomor Telepon anda.',
+                            ])
+                            ->numeric()
+                            ->required(fn($record) => $record !== null)
+                            ->columnSpanFull(),
                     ])->columns(2),
                 Section::make('Unggah File')
                     ->description('Ukuran maksimal unggah : 10 MB/File.')
@@ -184,8 +199,7 @@ class SiswaResource extends Resource
                         Forms\Components\Checkbox::make('status_verval')
                             ->label('Verifikasi')
                             ->helperText(new HtmlString('<strong>Biodata yang saya kirim adalah benar dan dapat dipertanggung jawabkan!</strong><br/>Centang jika data sudah benar.'))
-                            ->required(fn() => Auth::user()->is_admin !== 'Administrator'/* && fn($record) => $record !== */)
-                        // ->hidden(Auth::user()->is_admin === 'Administrator'),
+                            ->required(fn() => Auth::user()->is_admin !== 'Administrator')
                     ])
             ]);
     }
@@ -212,6 +226,7 @@ class SiswaResource extends Resource
                             ->sortable(),
                         Tables\Columns\TextColumn::make('nama')
                             ->label('Nama Lengkap')
+                            ->sortable()
                             ->searchable(),
                         Tables\Columns\TextColumn::make('nisn')
                             ->label('NISN')
@@ -219,6 +234,10 @@ class SiswaResource extends Resource
                         Tables\Columns\TextColumn::make('nik')
                             ->visible(Auth::user()->is_admin === 'Administrator')
                             ->label('NIK')
+                            ->searchable(),
+                        Tables\Columns\TextColumn::make('nomor_telepon')
+                            ->visible(Auth::user()->is_admin === 'Administrator')
+                            ->label('Nomor Telepon')
                             ->searchable(),
                         Tables\Columns\TextColumn::make('tempat_lahir')
                             ->label('Tempat Lahir')
